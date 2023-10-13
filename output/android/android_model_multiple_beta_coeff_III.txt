@@ -1,0 +1,8 @@
+        (Intercept)        Contributors   CommunityInterest DeveloperExperience 
+                 NA          1.18658437         -0.43911760          0.39625036 
+    OwnerEngagement       OwnerSpectrum                C1C1                C1C2 
+         0.16653744         -0.13307564         -0.74860163         -0.04337329 
+               C1C3                C1C4                C2C2                C2C3 
+        -0.01807533          0.03111826          0.02042632         -0.01964909 
+               C2C4                C3C3                C3C4                C4C4 
+        -0.03144406          0.07037791          0.01369295          0.17759034 

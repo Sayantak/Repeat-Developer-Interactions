@@ -1,0 +1,386 @@
+<<preprocessing-eclipse, echo=FALSE, eval=TRUE, results='hide'>>=
+
+# Read data file and see structure
+mydata = read.csv("../data/Eclipse_Master_01_Mar21.csv")
+str(mydata)
+
+# Remove columns which are not relevant for statistical analysis
+remove.cols = names(mydata) %in% c("issue_id", "status", "owner", "reported.by", "priority.code","priority.code.numeric")
+mydata.pruned <- mydata[!remove.cols]
+
+# To check if data properly pruned
+# write.csv(mydata.pruned,"mydatapruned.csv",row.names=FALSE)
+
+# Rename columns based on the study's context
+#names(mydata.pruned)[names(mydata.pruned) == 'priority.code.numeric'] <- 'Priority'
+names(mydata.pruned)[names(mydata.pruned) == 'elapsed.time'] <- 'ElapsedTime'
+names(mydata.pruned)[names(mydata.pruned) == 'comments'] <- 'Interest' 
+names(mydata.pruned)[names(mydata.pruned) == 'commenters'] <- 'Contributors' 
+names(mydata.pruned)[names(mydata.pruned) == 'comments.by.nonowners'] <- 'CommunityInterest'
+names(mydata.pruned)[names(mydata.pruned) == 'commenters.nonowners'] <- 'ExternalContributors'
+names(mydata.pruned)[names(mydata.pruned) == 'owner.bugs'] <- 'DeveloperExperience'
+names(mydata.pruned)[names(mydata.pruned) == 'owner.comments'] <- 'OwnerEngagement'
+names(mydata.pruned)[names(mydata.pruned) == 'owner.comments.nonowned'] <- 'OwnerSpectrum'
+names(mydata.pruned)[names(mydata.pruned) == 'total.vertices'] <- 'TotalVertices'
+names(mydata.pruned)[names(mydata.pruned) == 'c1_c1'] <- 'C1C1'
+names(mydata.pruned)[names(mydata.pruned) == 'c1_c2'] <- 'C1C2'
+names(mydata.pruned)[names(mydata.pruned) == 'c1_c3'] <- 'C1C3'
+names(mydata.pruned)[names(mydata.pruned) == 'c1_c4'] <- 'C1C4'
+names(mydata.pruned)[names(mydata.pruned) == 'c2_c2'] <- 'C2C2'
+names(mydata.pruned)[names(mydata.pruned) == 'c2_c3'] <- 'C2C3'
+names(mydata.pruned)[names(mydata.pruned) == 'c2_c4'] <- 'C2C4'
+names(mydata.pruned)[names(mydata.pruned) == 'c3_c3'] <- 'C3C3'
+names(mydata.pruned)[names(mydata.pruned) == 'c3_c4'] <- 'C3C4'
+names(mydata.pruned)[names(mydata.pruned) == 'c4_c4'] <- 'C4C4'
+names(mydata.pruned)[names(mydata.pruned) == 'repeat.edges'] <- 'RepeatInteractions'
+names(mydata.pruned)[names(mydata.pruned) == 'total.distinct.edges'] <- 'TotalDistinctEdges'
+names(mydata.pruned)[names(mydata.pruned) == 'total.edges'] <- 'TotalEdges'
+
+# To check if the variables are properly renamed.
+# write.csv(mydata.pruned,"mydatapruned-renamed.csv",row.names=FALSE)
+
+# Write the data-frame to be subsequently processed, in a file for ready reference
+workingdata <- mydata.pruned
+write.csv(workingdata,"../output/eclipse/workingdata_eclipse.csv",row.names=FALSE)
+@
+
+
+<<descriptives-eclipse, echo=FALSE, eval=TRUE, results='hide'>>=
+
+library(psych)
+desc <- describe(workingdata)
+write.csv(desc, file="../output/eclipse/descriptives_eclipse.csv")
+@
+
+%% POPULATE TABLE WITH DESCRIPTIVES
+
+\begin{table*}
+\centering
+\caption{Eclipse: Descriptive statistics of the model variables}
+\label{tab:eclipse-descriptives}
+\begin{tabular}{lccc}
+\hline
+Variable & Mean & Standard deviation & Median \\
+\hline
+\textit{ElapsedTime}  &  \Sexpr{desc["ElapsedTime", "mean"]} & \Sexpr{desc["ElapsedTime", "sd"]}  & \Sexpr{desc["ElapsedTime", "median"]} \\
+
+\hdashline
+
+\textit{Contributors}  &  \Sexpr{desc["Contributors", "mean"]} & \Sexpr{desc["Contributors", "sd"]}  & \Sexpr{desc["Contributors", "median"]} \\
+
+\textit{CommunityInterest}  &  \Sexpr{desc["CommunityInterest", "mean"]} & \Sexpr{desc["CommunityInterest", "sd"]}  & \Sexpr{desc["CommunityInterest", "median"]} \\
+
+\textit{DeveloperExperience}  &  \Sexpr{desc["DeveloperExperience", "mean"]} & \Sexpr{desc["DeveloperExperience", "sd"]}  & \Sexpr{desc["DeveloperExperience", "median"]} \\
+
+\textit{OwnerEngagement}  &  \Sexpr{desc["OwnerEngagement", "mean"]} & \Sexpr{desc["OwnerEngagement", "sd"]}  & \Sexpr{desc["OwnerEngagement", "median"]} \\
+
+\textit{OwnerSpectrum}  &  \Sexpr{desc["OwnerSpectrum", "mean"]} & \Sexpr{desc["OwnerSpectrum", "sd"]}  & \Sexpr{desc["OwnerSpectrum", "median"]} \\
+
+\textit{C1C1}  &  \Sexpr{desc["C1C1", "mean"]} & \Sexpr{desc["C1C1", "sd"]}  & \Sexpr{desc["C1C1", "median"]} \\
+\textit{C1C2}  &  \Sexpr{desc["C1C2", "mean"]} & \Sexpr{desc["C1C2", "sd"]}  & \Sexpr{desc["C1C2", "median"]} \\
+\textit{C1C3}  &  \Sexpr{desc["C1C3", "mean"]} & \Sexpr{desc["C1C3", "sd"]}  & \Sexpr{desc["C1C3", "median"]} \\
+\textit{C1C4}  &  \Sexpr{desc["C1C4", "mean"]} & \Sexpr{desc["C1C4", "sd"]}  & \Sexpr{desc["C1C4", "median"]} \\
+\textit{C2C2}  &  \Sexpr{desc["C2C2", "mean"]} & \Sexpr{desc["C2C2", "sd"]}  & \Sexpr{desc["C2C2", "median"]} \\
+\textit{C2C3}  &  \Sexpr{desc["C2C3", "mean"]} & \Sexpr{desc["C2C3", "sd"]}  & \Sexpr{desc["C2C3", "median"]} \\
+\textit{C2C4}  &  \Sexpr{desc["C2C4", "mean"]} & \Sexpr{desc["C2C4", "sd"]}  & \Sexpr{desc["C2C4", "median"]} \\
+\textit{C3C3}  &  \Sexpr{desc["C3C3", "mean"]} & \Sexpr{desc["C3C3", "sd"]}  & \Sexpr{desc["C3C3", "median"]} \\
+\textit{C3C4}  &  \Sexpr{desc["C3C4", "mean"]} & \Sexpr{desc["C3C4", "sd"]}  & \Sexpr{desc["C3C4", "median"]} \\
+\textit{C4C4}  &  \Sexpr{desc["C4C4", "mean"]} & \Sexpr{desc["C4C4", "sd"]}  & \Sexpr{desc["C4C4", "median"]} \\
+
+\hdashline
+\textit{RepeatInteractions}  &  \Sexpr{desc["RepeatInteractions", "mean"]} & \Sexpr{desc["RepeatInteractions", "sd"]}  & \Sexpr{desc["RepeatInteractions", "median"]} \\
+
+\hline
+\end{tabular}
+\end{table*}
+
+<<correlations-eclipse, echo=FALSE, eval=TRUE, results='hide'>>=
+
+correl.pearson <- cor(workingdata, use="complete.obs", method="pearson") 
+write.csv(correl.pearson, file="../output/eclipse/correl-pearson_eclipse.csv")
+@
+
+%% POPULATE TABLE WITH CORRELATIONS
+
+\begin{table*}
+\centering
+\caption{Eclipse: Pearson correlation coefficients of model variables with the dependent variable \textit{ElapsedTime}}
+\label{tab:eclipse-correl}
+\begin{tabular}{lc}
+\hline
+Variable & Correlation \\
+\hline
+
+
+
+\textit{Contributors} &  \Sexpr{cor(mydata.pruned$ElapsedTime, mydata.pruned$Contributors)} \\
+
+\textit{CommunityInterest} &  \Sexpr{cor(mydata.pruned$ElapsedTime, mydata.pruned$CommunityInterest)} \\
+
+\textit{DeveloperExperience} &  \Sexpr{cor(mydata.pruned$ElapsedTime, mydata.pruned$DeveloperExperience)} \\
+
+\textit{OwnerEngagement} &  \Sexpr{cor(mydata.pruned$ElapsedTime, mydata.pruned$OwnerEngagement)} \\
+
+\textit{OwnerSpectrum} &  \Sexpr{cor(mydata.pruned$ElapsedTime, mydata.pruned$OwnerSpectrum)} \\
+
+\textit{C1C1} &  \Sexpr{cor(mydata.pruned$ElapsedTime, mydata.pruned$C1C1)} \\
+\textit{C1C2} &  \Sexpr{cor(mydata.pruned$ElapsedTime, mydata.pruned$C1C2)} \\
+\textit{C1C3} &  \Sexpr{cor(mydata.pruned$ElapsedTime, mydata.pruned$C1C3)} \\
+\textit{C1C4} &  \Sexpr{cor(mydata.pruned$ElapsedTime, mydata.pruned$C1C4)} \\
+\textit{C2C2} &  \Sexpr{cor(mydata.pruned$ElapsedTime, mydata.pruned$C2C2)} \\
+\textit{C2C3} &  \Sexpr{cor(mydata.pruned$ElapsedTime, mydata.pruned$C2C3)} \\
+\textit{C2C4} &  \Sexpr{cor(mydata.pruned$ElapsedTime, mydata.pruned$C2C4)} \\
+\textit{C3C3} &  \Sexpr{cor(mydata.pruned$ElapsedTime, mydata.pruned$C3C3)} \\
+\textit{C3C4} &  \Sexpr{cor(mydata.pruned$ElapsedTime, mydata.pruned$C3C4)} \\
+\textit{C4C4} &  \Sexpr{cor(mydata.pruned$ElapsedTime, mydata.pruned$C4C4)} \\
+
+\textit{RepeatInteractions} &  \Sexpr{cor(mydata.pruned$ElapsedTime, mydata.pruned$RepeatInteractions)} \\
+
+
+\hline
+\end{tabular}
+\end{table*}
+
+<<regressions-eclipse, echo=FALSE, eval=TRUE, results='hide'>>=
+
+eclipse.model.I <- lm(sqrt(ElapsedTime) ~ Contributors + CommunityInterest + DeveloperExperience + OwnerEngagement + OwnerSpectrum + C1C1 + C1C2 + C1C3 + C1C4 + C2C2 + C2C3 + C2C4 + C3C3 + C3C4 + C4C4, data=workingdata) 
+summary(eclipse.model.I)
+capture.output(summary(eclipse.model.I), file = "../output/eclipse/eclipse-model-I-summary.txt")
+
+eclipse.model.II <- lm(sqrt(ElapsedTime) ~ Contributors + CommunityInterest  + DeveloperExperience + OwnerEngagement + OwnerSpectrum + C1C1 + C1C2 + C1C3 + C1C4 + C2C2 + C2C3 + C2C4 + C3C3 + C3C4 + C4C4 + sqrt(sqrt(RepeatInteractions)), data=workingdata)  
+summary(eclipse.model.II)
+capture.output(summary(eclipse.model.II), file = "../output/eclipse/eclipse-model-II-summary.txt")
+
+library(lm.beta)
+eclipse.model.multiple.III <- lm(sqrt(ElapsedTime) ~ Contributors + CommunityInterest + DeveloperExperience + OwnerEngagement + OwnerSpectrum + C1C1 + C1C2 + C1C3 + C1C4 + C2C2 + C2C3 + C2C4 + C3C3 + C3C4 + C4C4, data=workingdata)
+eclipse.model.multiple.beta.III <- lm.beta(eclipse.model.multiple.III)
+summary(eclipse.model.multiple.beta.III)
+capture.output(summary(eclipse.model.multiple.beta.III), file = "../output/eclipse/eclipse_model_multiple_beta_III.txt")
+coef(eclipse.model.multiple.beta.III)
+capture.output(coef(eclipse.model.multiple.beta.III), file = "../output/eclipse/eclipse_model_multiple_beta_coeff_III.txt")
+
+
+eclipse.model.multiple.IV <- lm(sqrt(ElapsedTime) ~ Contributors + CommunityInterest  + DeveloperExperience + OwnerEngagement + OwnerSpectrum + C1C1 + C1C2 + C1C3 + C1C4 + C2C2 + C2C3 + C2C4 + C3C3 + C3C4 + C4C4 + sqrt(sqrt(RepeatInteractions)), data=workingdata)
+eclipse.model.multiple.beta.IV <- lm.beta(eclipse.model.multiple.IV)
+summary(eclipse.model.multiple.beta.IV)
+capture.output(summary(eclipse.model.multiple.beta.IV), file = "../output/eclipse/eclipse_model_multiple_beta_IV.txt")
+coef(eclipse.model.multiple.beta.IV)
+capture.output(coef(eclipse.model.multiple.beta.IV), file = "../output/eclipse/eclipse_model_multiple_beta_coeff_IV.txt")
+
+@
+
+<<utility.functions_eclipse, echo=FALSE, eval=TRUE>>=
+# Used in the rendering of results
+
+# Function to calculate p-value of overall regression
+getPValue <- function (modelobject) {
+    #if (class(modelobject) != "lm") stop("Not an object of class 'lm' ")
+    f <- summary(modelobject)$fstatistic
+    p <- pf(f[1],f[2],f[3],lower.tail=F)
+    attributes(p) <- NULL
+    return(p)
+}
+
+# Function to calculate symbols for significance levels based on p-value
+getSigLevel <-  function(pvalue)
+{
+if ( pvalue  <= 0.001 ) 
+  {
+    return ("****")
+  } 
+  else if (  pvalue  <= 0.01 ) 
+      {
+        return ("***")
+      }
+        else if (pvalue  <= 0.05) 
+          { 
+            return ("**")
+          }
+            else if (pvalue  <= 0.1)
+            {
+              return ("*")
+            }
+            else
+            {
+              return ("-")
+            }
+}
+
+@
+
+
+%% POPULATE TABLE WITH REGRESSION MODEL OUTPUT
+%for both eclipse.model.I & eclipse.model.II
+
+\begin{table*}
+\centering
+\caption{Eclipse: Regression models to understand the influences on \textit{ElapsedTime}. \changed{For each variable, the first row represents the regression coefficient, the second row represents the standardized regression coefficient (in italics) and the third row represents the standard error (in parentheses).} Note: Significance levels ``****", ``***", ``**", ``*", ``-", denote corresponding $p$-value $\leq 0.001$, $\leq 0.01$, $\leq 0.05$, $\leq 0.1$, and $\geq 0.1$ respectively.} 
+
+\label{tab:eclipse-model}
+\begin{tabular}{lcc}
+
+\hline
+                        
+\hline
+						              & \textbf{Model I} & \textbf{Model II}    \\
+\hline 					
+\textit{Intercept}    		& \Sexpr{coef(summary(eclipse.model.I))["(Intercept)", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.I))["(Intercept)", "Pr(>|t|)"]) } & \Sexpr{coef(summary(eclipse.model.II))["(Intercept)", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.II))["(Intercept)", "Pr(>|t|)"]) } \\
+
+& \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.III))["(Intercept)", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.III))["(Intercept)", "Pr(>|t|)"]) } & \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.IV))["(Intercept)", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.IV))["(Intercept)", "Pr(>|t|)"]) } \\
+
+& (\Sexpr{coef(summary(eclipse.model.I))["(Intercept)", "Std. Error"] }) & (\Sexpr{coef(summary(eclipse.model.II))["(Intercept)", "Std. Error"] })\\
+
+\hline
+
+\textit{Contributors}    		& \Sexpr{coef(summary(eclipse.model.I))["Contributors", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.I))["Contributors", "Pr(>|t|)"]) } & \Sexpr{coef(summary(eclipse.model.II))["Contributors", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.II))["Contributors", "Pr(>|t|)"]) }\\
+
+& \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.III))["Contributors", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.III))["Contributors", "Pr(>|t|)"]) }  & \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.IV))["Contributors", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.IV))["Contributors", "Pr(>|t|)"]) } \\
+
+& (\Sexpr{coef(summary(eclipse.model.I))["Contributors", "Std. Error"] }) & (\Sexpr{coef(summary(eclipse.model.II))["Contributors", "Std. Error"] })\\
+
+\hline
+
+\textit{CommunityInterest}    		& \Sexpr{coef(summary(eclipse.model.I))["CommunityInterest", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.I))["CommunityInterest", "Pr(>|t|)"]) } & \Sexpr{coef(summary(eclipse.model.II))["CommunityInterest", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.II))["CommunityInterest", "Pr(>|t|)"]) }	 \\
+
+& \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.III))["CommunityInterest", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.III))["CommunityInterest", "Pr(>|t|)"]) }  & \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.IV))["CommunityInterest", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.IV))["CommunityInterest", "Pr(>|t|)"]) } \\
+
+& (\Sexpr{coef(summary(eclipse.model.I))["CommunityInterest", "Std. Error"] }) & (\Sexpr{coef(summary(eclipse.model.II))["CommunityInterest", "Std. Error"] })\\
+
+
+\hline
+\textit{DeveloperExperience}    		& \Sexpr{coef(summary(eclipse.model.I))["DeveloperExperience", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.I))["DeveloperExperience", "Pr(>|t|)"]) } & \Sexpr{coef(summary(eclipse.model.II))["DeveloperExperience", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.II))["DeveloperExperience", "Pr(>|t|)"]) } \\
+
+& \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.III))["DeveloperExperience", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.III))["DeveloperExperience", "Pr(>|t|)"]) }  & \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.IV))["DeveloperExperience", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.IV))["DeveloperExperience", "Pr(>|t|)"]) } \\
+
+& (\Sexpr{coef(summary(eclipse.model.I))["DeveloperExperience", "Std. Error"] }) & (\Sexpr{coef(summary(eclipse.model.II))["DeveloperExperience", "Std. Error"] })\\
+
+\hline
+
+\textit{OwnerEngagement}    		& \Sexpr{coef(summary(eclipse.model.I))["OwnerEngagement", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.I))["OwnerEngagement", "Pr(>|t|)"]) } & \Sexpr{coef(summary(eclipse.model.II))["OwnerEngagement", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.II))["OwnerEngagement", "Pr(>|t|)"]) } \\
+
+& \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.III))["OwnerEngagement", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.III))["OwnerEngagement", "Pr(>|t|)"]) }  & \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.IV))["OwnerEngagement", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.IV))["OwnerEngagement", "Pr(>|t|)"]) } \\
+
+& (\Sexpr{coef(summary(eclipse.model.I))["OwnerEngagement", "Std. Error"] }) & (\Sexpr{coef(summary(eclipse.model.II))["OwnerEngagement", "Std. Error"] })\\
+
+\hline
+\textit{OwnerSpectrum}    		& \Sexpr{coef(summary(eclipse.model.I))["OwnerSpectrum", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.I))["OwnerSpectrum", "Pr(>|t|)"]) } & \Sexpr{coef(summary(eclipse.model.II))["OwnerSpectrum", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.II))["OwnerSpectrum", "Pr(>|t|)"]) } \\
+
+& \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.III))["OwnerSpectrum", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.III))["OwnerSpectrum", "Pr(>|t|)"]) }  & \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.IV))["OwnerSpectrum", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.IV))["OwnerSpectrum", "Pr(>|t|)"]) } \\
+
+& (\Sexpr{coef(summary(eclipse.model.I))["OwnerSpectrum", "Std. Error"] }) & (\Sexpr{coef(summary(eclipse.model.II))["OwnerSpectrum", "Std. Error"] })\\
+
+\hline
+\textit{C1C1}    		& \Sexpr{coef(summary(eclipse.model.I))["C1C1", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.I))["C1C1", "Pr(>|t|)"]) } & \Sexpr{coef(summary(eclipse.model.II))["C1C1", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.II))["C1C1", "Pr(>|t|)"]) }	\\
+
+& \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.III))["C1C1", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.III))["C1C1", "Pr(>|t|)"]) }  & \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.IV))["C1C1", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.IV))["C1C1", "Pr(>|t|)"]) }\\
+
+& (\Sexpr{coef(summary(eclipse.model.I))["C1C1", "Std. Error"] }) & (\Sexpr{coef(summary(eclipse.model.II))["C1C1", "Std. Error"] })\\
+
+\hline
+\textit{C1C2}    		& \Sexpr{coef(summary(eclipse.model.I))["C1C2", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.I))["C1C2", "Pr(>|t|)"]) } & \Sexpr{coef(summary(eclipse.model.II))["C1C2", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.II))["C1C2", "Pr(>|t|)"]) } \\
+
+& \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.III))["C1C2", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.III))["C1C2", "Pr(>|t|)"]) } & \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.IV))["C1C2", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.IV))["C1C2", "Pr(>|t|)"]) }\\
+
+& (\Sexpr{coef(summary(eclipse.model.I))["C1C2", "Std. Error"] }) & (\Sexpr{coef(summary(eclipse.model.II))["C1C2", "Std. Error"] })\\
+
+
+\hline
+\textit{C1C3}    		& \Sexpr{coef(summary(eclipse.model.I))["C1C3", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.I))["C1C3", "Pr(>|t|)"]) } & \Sexpr{coef(summary(eclipse.model.II))["C1C3", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.II))["C1C3", "Pr(>|t|)"]) }\\
+
+& \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.III))["C1C3", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.III))["C1C3", "Pr(>|t|)"]) } & \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.IV))["C1C3", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.IV))["C1C3", "Pr(>|t|)"]) }\\
+
+& (\Sexpr{coef(summary(eclipse.model.I))["C1C3", "Std. Error"] }) & (\Sexpr{coef(summary(eclipse.model.II))["C1C3", "Std. Error"] })\\
+
+
+\hline
+\textit{C1C4}    		& \Sexpr{coef(summary(eclipse.model.I))["C1C4", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.I))["C1C4", "Pr(>|t|)"]) } & \Sexpr{coef(summary(eclipse.model.II))["C1C4", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.II))["C1C4", "Pr(>|t|)"]) }\\
+
+& \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.III))["C1C4", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.III))["C1C4", "Pr(>|t|)"]) } & \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.IV))["C1C4", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.IV))["C1C4", "Pr(>|t|)"]) }\\
+
+& (\Sexpr{coef(summary(eclipse.model.I))["C1C4", "Std. Error"] }) & (\Sexpr{coef(summary(eclipse.model.II))["C1C4", "Std. Error"] })\\
+
+
+\hline
+\textit{C2C2}    		& \Sexpr{coef(summary(eclipse.model.I))["C2C2", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.I))["C2C2", "Pr(>|t|)"]) } & \Sexpr{coef(summary(eclipse.model.II))["C2C2", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.II))["C2C2", "Pr(>|t|)"]) }\\
+
+& \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.III))["C2C2", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.III))["C2C2", "Pr(>|t|)"]) } & \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.IV))["C2C2", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.IV))["C2C2", "Pr(>|t|)"]) }\\
+
+& (\Sexpr{coef(summary(eclipse.model.I))["C2C2", "Std. Error"] }) & (\Sexpr{coef(summary(eclipse.model.II))["C2C2", "Std. Error"] })\\
+
+
+\hline
+\textit{C2C3}    		& \Sexpr{coef(summary(eclipse.model.I))["C2C3", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.I))["C2C3", "Pr(>|t|)"]) } & \Sexpr{coef(summary(eclipse.model.II))["C2C3", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.II))["C2C3", "Pr(>|t|)"]) }\\
+
+& \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.III))["C2C3", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.III))["C2C3", "Pr(>|t|)"]) } & \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.IV))["C2C3", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.IV))["C2C3", "Pr(>|t|)"]) }\\
+
+& (\Sexpr{coef(summary(eclipse.model.I))["C2C3", "Std. Error"] }) & (\Sexpr{coef(summary(eclipse.model.II))["C2C3", "Std. Error"] })\\
+
+
+\hline
+\textit{C2C4}    		& \Sexpr{coef(summary(eclipse.model.I))["C2C4", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.I))["C2C4", "Pr(>|t|)"]) } & \Sexpr{coef(summary(eclipse.model.II))["C2C4", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.II))["C2C4", "Pr(>|t|)"]) }\\
+
+& \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.III))["C2C4", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.III))["C2C4", "Pr(>|t|)"]) } & \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.IV))["C2C4", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.IV))["C2C4", "Pr(>|t|)"]) }\\
+
+& (\Sexpr{coef(summary(eclipse.model.I))["C2C4", "Std. Error"] }) & (\Sexpr{coef(summary(eclipse.model.II))["C2C4", "Std. Error"] })\\
+
+
+\hline
+\textit{C3C3}    		& \Sexpr{coef(summary(eclipse.model.I))["C3C3", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.I))["C3C3", "Pr(>|t|)"]) } & \Sexpr{coef(summary(eclipse.model.II))["C3C3", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.II))["C3C3", "Pr(>|t|)"]) }\\
+
+& \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.III))["C3C3", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.III))["C3C3", "Pr(>|t|)"]) } & \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.IV))["C3C3", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.IV))["C3C3", "Pr(>|t|)"]) }\\
+
+& (\Sexpr{coef(summary(eclipse.model.I))["C3C3", "Std. Error"] }) & (\Sexpr{coef(summary(eclipse.model.II))["C3C3", "Std. Error"] })\\
+
+
+\hline
+\textit{C3C4}    		& \Sexpr{coef(summary(eclipse.model.I))["C3C4", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.I))["C3C4", "Pr(>|t|)"]) } & \Sexpr{coef(summary(eclipse.model.II))["C3C4", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.II))["C3C4", "Pr(>|t|)"]) }\\
+
+& \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.III))["C3C4", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.III))["C3C4", "Pr(>|t|)"]) } & \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.IV))["C3C4", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.IV))["C3C4", "Pr(>|t|)"]) }\\
+
+& (\Sexpr{coef(summary(eclipse.model.I))["C3C4", "Std. Error"] }) & (\Sexpr{coef(summary(eclipse.model.II))["C3C4", "Std. Error"] })\\
+
+
+\hline
+\textit{C4C4}    		& \Sexpr{coef(summary(eclipse.model.I))["C4C4", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.I))["C4C4", "Pr(>|t|)"]) } & \Sexpr{coef(summary(eclipse.model.II))["C4C4", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.II))["C4C4", "Pr(>|t|)"]) }\\
+
+& \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.III))["C4C4", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.III))["C4C4", "Pr(>|t|)"]) } & \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.IV))["C4C4", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.IV))["C4C4", "Pr(>|t|)"]) }\\
+
+& (\Sexpr{coef(summary(eclipse.model.I))["C4C4", "Std. Error"] }) & (\Sexpr{coef(summary(eclipse.model.II))["C4C4", "Std. Error"] })\\
+
+
+\hline
+\textit{RepeatInteractions}    		&  & \Sexpr{coef(summary(eclipse.model.II))["sqrt(sqrt(RepeatInteractions))", "Estimate"] } \Sexpr{getSigLevel(coef(summary(eclipse.model.II))["sqrt(sqrt(RepeatInteractions))", "Pr(>|t|)"]) }	\\
+
+&& \it{\Sexpr{coef(summary(eclipse.model.multiple.beta.IV))["sqrt(sqrt(RepeatInteractions))", "Standardized"] }}\Sexpr{getSigLevel(coef(summary(eclipse.model.multiple.beta.IV))["sqrt(sqrt(RepeatInteractions))", "Pr(>|t|)"]) }\\
+
+&  & (\Sexpr{coef(summary(eclipse.model.II))["sqrt(sqrt(RepeatInteractions))", "Std. Error"] })\\
+\hline
+\hline
+\end{tabular}
+\end{table*}
+
+
+\begin{table*}
+\centering
+\caption{Eclipse: Regression model parameters} 
+
+\label{tab:eclipse-model-params}
+\begin{tabular}{lcc}
+
+\hline
+                        
+\hline		
+ \textbf{Model parameters} & \textbf{Model I} & \textbf{Model II} \\
+\hline			  
+$N$					 			& \Sexpr{nrow(workingdata)} & \Sexpr{nrow(workingdata)}	\\ 
+
+$R^2$	  				 		& \Sexpr{summary.lm(eclipse.model.I)$r.squared} & \Sexpr{summary.lm(eclipse.model.II)$r.squared} \\
+
+$df$  				 		& \Sexpr{summary(eclipse.model.I)$fstatistic["dendf"]} & \Sexpr{summary(eclipse.model.II)$fstatistic["dendf"]} \\
+
+$F$                & \Sexpr{summary.lm(eclipse.model.I)$fstatistic['value']} & \Sexpr{summary.lm(eclipse.model.II)$fstatistic['value']}\\
+
+\textit{Significance level}& \Sexpr{getSigLevel(getPValue(eclipse.model.I))} & \Sexpr{getSigLevel(getPValue(eclipse.model.II))}  \\
+\hline
+\end{tabular}
+\end{table*}

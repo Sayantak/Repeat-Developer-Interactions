@@ -1,0 +1,37 @@
+
+Call:
+lm(formula = ElapsedTime ~ Contributors + CommunityInterest + 
+    DeveloperExperience + OwnerEngagement + OwnerSpectrum + C1C1 + 
+    C1C2 + C1C3 + C1C4 + C2C2 + C2C3 + C2C4 + C3C3 + C3C4 + C4C4 + 
+    sqrt(sqrt(RepeatInteractions)), data = workingdata)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-526.8 -182.3  -37.8  151.6  877.3 
+
+Coefficients:
+                                 Estimate Std. Error t value Pr(>|t|)    
+(Intercept)                    -1.174e+02  4.739e+01  -2.478 0.013407 *  
+Contributors                    6.173e+01  8.645e+00   7.140 2.11e-12 ***
+CommunityInterest              -2.027e+01  3.837e+00  -5.283 1.64e-07 ***
+DeveloperExperience             1.327e-02  1.338e-03   9.916  < 2e-16 ***
+OwnerEngagement                 4.813e-01  1.917e-01   2.511 0.012234 *  
+OwnerSpectrum                  -6.478e-01  2.963e-01  -2.187 0.029061 *  
+C1C1                           -3.685e+00  6.472e-01  -5.694 1.75e-08 ***
+C1C2                           -4.128e+00  3.112e+00  -1.327 0.185004    
+C1C3                           -2.153e+00  4.507e+00  -0.478 0.632969    
+C1C4                           -2.753e-01  1.295e+00  -0.213 0.831734    
+C2C2                            6.597e+01  9.746e+01   0.677 0.498647    
+C2C3                           -3.255e+01  4.861e+01  -0.670 0.503335    
+C2C4                           -6.908e+00  9.262e+00  -0.746 0.455958    
+C3C3                            1.549e+02  7.866e+01   1.969 0.049276 *  
+C3C4                            2.664e+00  9.081e+00   0.293 0.769323    
+C4C4                            1.099e+01  2.821e+00   3.896 0.000106 ***
+sqrt(sqrt(RepeatInteractions))  9.612e+01  2.741e+01   3.506 0.000480 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 245.5 on 791 degrees of freedom
+Multiple R-squared:  0.2531,	Adjusted R-squared:  0.238 
+F-statistic: 16.76 on 16 and 791 DF,  p-value: < 2.2e-16
+

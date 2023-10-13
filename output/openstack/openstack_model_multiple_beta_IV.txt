@@ -1,0 +1,37 @@
+
+Call:
+lm(formula = sqrt(ElapsedTime) ~ Contributors + CommunityInterest + 
+    DeveloperExperience + OwnerEngagement + OwnerSpectrum + C1C1 + 
+    C1C2 + C1C3 + C1C4 + C2C2 + C2C3 + C2C4 + C3C3 + C3C4 + C4C4 + 
+    sqrt(sqrt(RepeatInteractions)), data = workingdata)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-57.004 -13.586  -3.759   8.440 126.213 
+
+Coefficients:
+                                 Estimate Standardized Std. Error t value Pr(>|t|)    
+(Intercept)                     2.003e+01           NA  1.058e+00  18.929  < 2e-16 ***
+Contributors                    8.881e-02    8.748e-03  1.796e-01   0.494  0.62096    
+CommunityInterest               3.171e-02    2.360e-02  2.363e-02   1.342  0.17954    
+DeveloperExperience             7.102e-04    1.203e-01  3.682e-05  19.291  < 2e-16 ***
+OwnerEngagement                -4.534e-03   -7.961e-01  3.389e-04 -13.378  < 2e-16 ***
+OwnerSpectrum                   4.503e-03    7.514e-01  3.558e-04  12.657  < 2e-16 ***
+C1C1                            5.815e-02    2.526e-02  1.938e-02   3.001  0.00269 ** 
+C1C2                            1.035e-01    1.613e-02  5.811e-02   1.782  0.07482 .  
+C1C3                           -1.296e-02   -4.131e-03  3.387e-02  -0.383  0.70202    
+C1C4                           -7.948e-02   -6.402e-02  1.481e-02  -5.366  8.1e-08 ***
+C2C2                            1.202e-01    5.981e-03  1.865e-01   0.644  0.51939    
+C2C3                           -9.171e-02   -1.327e-02  8.146e-02  -1.126  0.26025    
+C2C4                           -6.390e-02   -2.071e-02  2.578e-02  -2.478  0.01321 *  
+C3C3                           -2.297e-02   -2.922e-03  9.169e-02  -0.251  0.80216    
+C3C4                           -1.654e-02   -8.270e-03  2.189e-02  -0.756  0.44995    
+C4C4                            4.820e-03    4.411e-03  1.334e-02   0.361  0.71792    
+sqrt(sqrt(RepeatInteractions))  9.236e+00    1.345e-01  1.113e+00   8.296  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 20.62 on 25514 degrees of freedom
+Multiple R-squared:  0.0434,	Adjusted R-squared:  0.0428 
+F-statistic: 72.35 on 16 and 25514 DF,  p-value: < 2.2e-16
+
