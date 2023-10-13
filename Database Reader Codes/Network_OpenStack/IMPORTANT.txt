@@ -1,0 +1,15 @@
+In final.csv file
+
+column 0 : issue_id
+column 1 : change_id
+column 2 : developer_id
+column 3 :  time_and_date
+
+-----------------------------------------------------------------------------------
+
+In developers_and_comments(1).csv file
+
+column 0: developer_id
+column 1: no_of_comments 
+
+
